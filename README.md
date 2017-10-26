@@ -3,7 +3,7 @@
 
 ## 目录
 
- 1. [Git](Git/READEME.md)
+ 1. [Git](Git/Git.md)
  2. [MarkDown](Markdown/Markdown.md)
 
 
