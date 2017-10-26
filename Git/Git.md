@@ -9,7 +9,7 @@
 # 目录
 
 - [前言](preface.md)
-- [起步](01-introduction/1-introduction.md)
+- [简介](01-introduction/1-introduction.md)
   + [关于版本控制](01-introduction/sections/about-version-control.md)
   + [Git 简史](01-introduction/sections/history.md)
   + [Git 基础](01-introduction/sections/basics.md)
