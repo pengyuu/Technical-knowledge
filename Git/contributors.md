@@ -1,10 +1,8 @@
-[preface]
-== 贡献者
+## 贡献者
 
 因为这是一本开源书籍，这几年我们获得了捐赠的若干勘误表与内容修改。下面是将 ProGit 英文版作为开源项目贡献的所有人员。感谢你们帮助将这本书变成对每一个人都更好的书。
 
-[source]
-----
+```
  2  Aaron Schumacher
  4  Aggelos Orfanakos
  4  Alec Clews
@@ -98,5 +96,4 @@
  1  onovy
  2  pcasaretto
  1  sampablokuper
-----
-
+```
