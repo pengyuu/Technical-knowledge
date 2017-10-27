@@ -1,18 +1,16 @@
-=== 使用 Git 调试
+###使用 Git 调试
 
 Git 也提供了两个工具来辅助你调试项目中的问题。
 由于 Git 被设计成适用于几乎所有类型的项目，这些工具是比较通用的，但它们可以在出现问题的时候帮助你找到 bug 或者错误。
 
-[[_file_annotation]]
-==== 文件标注
+#### 文件标注
 
 如果你在追踪代码中的一个 bug，并且想知道是什么时候以及为何会引入，文件标注通常是最好用的工具。
 它展示了文件中每一行最后一次修改的提交。
 所以，如果你在代码中看到一个有问题的方法，你可以使用 `git blame` 标注这个文件，查看这个方法每一行的最后修改时间以及是被谁修改的。
 这个例子使用 `-L` 选项来限制输出范围在第12至22行：
 
-[source,console]
-----
+```bash
 $ git blame -L 12,22 simplegit.rb
 ^4832fe2 (Scott Chacon  2008-03-15 10:31:28 -0700 12)  def show(tree = 'master')
 ^4832fe2 (Scott Chacon  2008-03-15 10:31:28 -0700 13)   command("git show #{tree}")
@@ -25,7 +23,7 @@ $ git blame -L 12,22 simplegit.rb
 42cf2861 (Magnus Chacon 2008-04-13 10:45:01 -0700 20)  def blame(path)
 42cf2861 (Magnus Chacon 2008-04-13 10:45:01 -0700 21)   command("git blame #{path}")
 42cf2861 (Magnus Chacon 2008-04-13 10:45:01 -0700 22)  end
-----
+```
 
 请注意，第一个字段是最后一次修改该行的提交的部分 SHA-1 值。
 接下来两个字段的值是从提交中提取出来的——作者的名字以及提交的时间——所以你就可以很轻易地找到是谁在什么时候修改了那一行。
@@ -41,8 +39,7 @@ $ git blame -L 12,22 simplegit.rb
 比如，你将 `GITServerHandler.m` 这个文件拆分为数个文件，其中一个文件是 `GITPackUpload.m`。
 对 `GITPackUpload.m` 执行带 `-C` 参数的blame命令，你就可以看到代码块的原始出处：
 
-[source,console]
-----
+```bash
 $ git blame -C -L 141,153 GITPackUpload.m
 f344f58d GITServerHandler.m (Scott 2009-01-04 141)
 f344f58d GITServerHandler.m (Scott 2009-01-04 142) - (void) gatherObjectShasFromC
@@ -57,14 +54,13 @@ ad11ac80 GITPackUpload.m    (Scott 2009-03-24 150)
 56ef2caf GITServerHandler.m (Scott 2009-01-05 151)         if(commit) {
 56ef2caf GITServerHandler.m (Scott 2009-01-05 152)                 [refDict setOb
 56ef2caf GITServerHandler.m (Scott 2009-01-05 153)
-----
+```
 
 这个功能很有用。
 通常来说，你会认为复制代码过来的那个提交是最原始的提交，因为那是你第一次在这个文件中修改了这几行。
 但 Git 会告诉你，你第一次写这几行代码的那个提交才是原始提交，即使这是在另外一个文件里写的。
 
-[[_binary_search]]
-==== 二分查找
+#### 二分查找
 
 当你知道问题是在哪里引入的情况下文件标注可以帮助你查找问题。
 如果你不知道哪里出了问题，并且自从上次可以正常运行到现在已经有数十个或者上百个提交，这个时候你可以使用 `git bisect` 来帮助查找。
@@ -76,42 +72,38 @@ ad11ac80 GITPackUpload.m    (Scott 2009-03-24 150)
 首先执行 `git bisect start` 来启动，接着执行 `git bisect bad` 来告诉系统当前你所在的提交是有问题的。
 然后你必须告诉 bisect 已知的最后一次正常状态是哪次提交，使用 `git bisect good [good_commit]`：
 
-[source,console]
-----
+```bash
 $ git bisect start
 $ git bisect bad
 $ git bisect good v1.0
 Bisecting: 6 revisions left to test after this
 [ecb6e1bc347ccecc5f9350d878ce677feb13d3b2] error handling on repo
-----
+```
 
 Git 发现在你标记为正常的提交(v1.0)和当前的错误版本之间有大约12次提交，于是 Git 检出中间的那个提交。
 现在你可以执行测试，看看在这个提交下问题是不是还是存在。
 如果还存在，说明问题是在这个提交之前引入的；如果问题不存在，说明问题是在这个提交之后引入的。
 假设测试结果是没有问题的，你可以通过 `git bisect good` 来告诉 Git，然后继续寻找。
 
-[source,console]
-----
+```bash
 $ git bisect good
 Bisecting: 3 revisions left to test after this
 [b047b02ea83310a70fd603dc8cd7a6cd13d15c04] secure this thing
-----
+```
 
 现在你在另一个提交上了，这个提交是刚刚那个测试通过的提交和有问题的提交的中点。
 你再一次执行测试，发现这个提交下是有问题的，因此你可以通过 `git bisect bad` 告诉 Git：
 
-[source,console]
-----
+```bash
 $ git bisect bad
 Bisecting: 1 revisions left to test after this
 [f71ce38690acf49c1f3c9bea38e09d82a5ce6014] drop exceptions table
-----
+```
 
 这个提交是正常的，现在 Git 拥有的信息已经可以确定引入问题的位置在哪里。
 它会告诉你第一个错误提交的 SHA-1 值并显示一些提交说明，以及哪些文件在那次提交里修改过，这样你可以找出引入 bug 的根源：
 
-[source,console]
-----
+```bash
 $ git bisect good
 b047b02ea83310a70fd603dc8cd7a6cd13d15c04 is first bad commit
 commit b047b02ea83310a70fd603dc8cd7a6cd13d15c04
@@ -122,25 +114,23 @@ Date:   Tue Jan 27 14:48:32 2009 -0800
 
 :040000 040000 40ee3e7821b895e52c1695092db9bdc4c61d1730
 f24d3c6ebcfc639b1a3814550e62d60b8e68a8e4 M  config
-----
+```
 
 当你完成这些操作之后，你应该执行 `git bisect reset` 重置你的 HEAD 指针到最开始的位置，否则你会停留在一个很奇怪的状态：
 
-[source,console]
-----
+```bash
 $ git bisect reset
-----
+```
 
 这是一个可以帮助你在几分钟内从数百个提交中找到 bug 的强大工具。
 事实上，如果你有一个脚本在项目是正常的情况下返回 0，在不正常的情况下返回非 0，你可以使 `git bisect` 自动化这些操作。
 首先，你设定好项目正常以及不正常所在提交的二分查找范围。
 你可以通过 `bisect start` 命令的参数来设定这两个提交，第一个参数是项目不正常的提交，第二个参数是项目正常的提交：
 
-[source,console]
-----
+```bash
 $ git bisect start HEAD v1.0
 $ git bisect run test-error.sh
-----
+```
 
 Git 会自动在每个被检出的提交里执行 `test-error.sh` 直到找到第一个项目不正常的提交。
 你也可以执行 `make` 或者 `make tests` 或者其他东西来进行自动化测试。
