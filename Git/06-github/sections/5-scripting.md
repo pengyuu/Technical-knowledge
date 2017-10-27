@@ -1,40 +1,40 @@
-=== 脚本 GitHub
+### 脚本 GitHub
 
 所以现在我们已经介绍了 GitHub 的大部分功能与工作流程，但是任意一个小组或项目都会去自定义，因为他们想要创造或扩展想要整合的服务。
 
 对我们来说很幸运的是，GitHub 在许多方面都真的很方便 Hack。
 在本节中我们将会介绍如何使用 GitHub 钩子系统与 API 接口，使 GitHub 按照我们的设想来工作。
 
-==== 钩子
+#### 钩子
 
 GitHub 仓库管理中的钩子与服务区块是 GitHub 与外部系统交互最简单的方式。
 
-===== 服务
+##### 服务
 
 首先我们来看一下服务。
 钩子与服务整合都可以在仓库的设置区块中找到，就在我们之前添加协作者与改变项目的默认分支的地方。
-在 ``Webhooks and Services'' 标签下你会看到与 <<_services_hooks>> 类似的内容。
+在 `Webhooks and Services` 标签下你会看到与 服务与钩子配置区域 类似的内容。
 
-[[_services_hooks]]
-.服务与钩子配置区域
-image::../images/scripting-01-services.png[服务与钩子]
+.服务与钩子配置区域:
+
+![服务与钩子](../images/scripting-01-services.png)
 
 有许多可以选择的服务，大多数是整合到其他的商业与开源系统中。
 它们中的大多数是为了整合持续集成服务、BUG 与问题追踪系统、聊天室系统与文档系统。
 我们将会通过设置一个非常简单的例子来介绍。
-如果从 ``Add Service'' 选择 ``email''，会得到一个类似 <<_service_config>> 的配置屏幕。
+如果从 `Add Service` 选择 `email`，会得到一个类似 电子邮件服务配置 的配置屏幕。
 
-[[_service_config]]
-.电子邮件服务配置
-image::../images/scripting-02-email-service.png[电子邮件服务]
+.电子邮件服务配置:
 
-在本例中，如果我们点击 ``Add service'' 按钮，每次有人推送内容到仓库时，指定的电子邮件地址都会收到一封邮件。
+![电子邮件服务](../images/scripting-02-email-service.png)
+
+在本例中，如果我们点击 `Add service` 按钮，每次有人推送内容到仓库时，指定的电子邮件地址都会收到一封邮件。
 服务可以监听许多不同类型的事件，但是大多数只监听推送事件然后使用那些数据做一些事情。
 
 如果有一个正在使用的系统想要整合到 GitHub，应当先检查这里看有没有已有的可用的服务整合。
 例如，如果正使用 Jenkins 来测试你的代码库，当每次有人推送到你的仓库时你可以启用 Jenkins 内置的整合启动测试运行。
 
-===== 钩子
+##### 钩子
 
 如果需要做一些更具体的事，或者想要整合一个不在这个列表中的服务或站点，可以转而使用更通用的钩子系统。
 GitHub 仓库钩子是非常简单的。
@@ -42,15 +42,15 @@ GitHub 仓库钩子是非常简单的。
 
 通常做这件事的方式是可以设置一个小的 web 服务来监听 GitHub 钩子请求然后使用收到的数据做一些事情。
 
-为了启用一个钩子，点击 <<_services_hooks>> 中的 ``Add webhook'' 按钮。
-这会将你引导至一个类似 <<_web_hook>> 的页面。
+为了启用一个钩子，点击 服务与钩子配置区域 中的 `Add webhook` 按钮。
+这会将你引导至一个类似 Web 钩子配置 的页面。
 
-[[_web_hook]]
-.Web 钩子配置
-image::../images/scripting-03-webhook.png[Web 钩子配置]
+.Web 钩子配置:
+
+![Web 钩子配置](../images/scripting-03-webhook.png)
 
 Web 钩子的设置非常简单。
-大多数情况下只需要输入一个 URL 与一个密钥然后点击 ``Add webhook''。
+大多数情况下只需要输入一个 URL 与一个密钥然后点击 `Add webhook`。
 有几个选项可以指定在哪个事件时想要 GitHub 发送请求 -- 默认的行为是只有当某人推送新代码到仓库的任一分支时的 `push` 事件获得一个请求。
 
 让我们看一个设置处理 web 钩子的 web 服务的小例子。
@@ -59,28 +59,27 @@ Web 钩子的设置非常简单。
 假设我们想要在某个特定的人推送到我们的项目的特定分支并修改一个特定文件时得到一封邮件。
 我们可以相当容易地使用类似下面的代码做到：
 
-[source,ruby]
-----
+```ruby
 require 'sinatra'
 require 'json'
 require 'mail'
 
 post '/payload' do
-  push = JSON.parse(request.body.read) # parse the JSON
+  push # JSON.parse(request.body.read) # parse the JSON
 
   # gather the data we're looking for
-  pusher = push["pusher"]["name"]
-  branch = push["ref"]
+  pusher # push["pusher"]["name"]
+  branch # push["ref"]
 
   # get a list of all the files touched
-  files = push["commits"].map do |commit|
+  files # push["commits"].map do |commit|
     commit['added'] + commit['modified'] + commit['removed']
   end
-  files = files.flatten.uniq
+  files # files.flatten.uniq
 
   # check for our criteria
-  if pusher == 'schacon' &&
-     branch == 'ref/heads/special-branch' &&
+  if pusher ## 'schacon' &&
+     branch ## 'ref/heads/special-branch' &&
      files.include?('special-file.txt')
 
     Mail.deliver do
@@ -91,7 +90,7 @@ post '/payload' do
     end
   end
 end
-----
+```
 
 这里我们拿到一个 GitHub 传送给我们的 JSON 请求然后查找推送者，他们推送到了什么分支以及推送的所有提交都改动了哪些文件。
 然后我们检查它是否与我们的条件区配，如果匹配则发送一封邮件。
@@ -101,31 +100,30 @@ end
 对每一个钩子，当它发送后都可以深入挖掘，检测它是否是成功的与请求及回应的消息头与消息体。
 这使得测试与调试钩子非常容易。
 
-[[_web_hook_debug]]
-.Web 钩子调试信息
-image::../images/scripting-04-webhook-debug.png[Web 钩子调试信息]
+
+.Web 钩子调试信息:
+
+![Web 钩子调试信息](../images/scripting-04-webhook-debug.png)
 
 开发者控制台的另一个很棒的功能是可以轻松地重新发送任何请求来测试你的服务。
 
-关于如何编写 web 钩子与所有可监听的不同事件类型的更多信息，请访问在 https://developer.github.com/webhooks/[] 的 GitHub 开发者文档。
+关于如何编写 web 钩子与所有可监听的不同事件类型的更多信息，请访问在 https://developer.github.com/webhooks/ 的 GitHub 开发者文档。
 
-==== GitHub API
+#### GitHub API
 
-(((GitHub, API)))
 服务与钩子给你提供了一种方式来接收关于在仓库中发生的事件的推送通知，但是如何获取相关事件的详情呢？如何自动化一些诸如添加协作者或给问题加标签的事情呢？
 
 这是 GitHub API 派上用场的地方。
 在自动化流行的趋势下，GitHub 提供了大量的 API 接口，可以进行几乎任何能在网站上进行的操作。
 在本节中我们将会学习如何授权与连接到 API，如何通过 API 在一个问题上评论与如何修改一个 Pull Request 的状态。
 
-==== 基本用途
+#### 基本用途
 
 可以做的最基本的事情是向一个不需要授权的接口上发送一个简单的 GET 请求。
 该接口可能是一个用户或开源项目的只读信息。
-例如，如果我们想要知道更多关于名为 ``schacon'' 的用户信息，我们可以运行类似下面的东西：
+例如，如果我们想要知道更多关于名为 `schacon` 的用户信息，我们可以运行类似下面的东西：
 
-[source,javascript]
-----
+```javascript
 $ curl https://api.github.com/users/schacon
 {
   "login": "schacon",
@@ -138,13 +136,12 @@ $ curl https://api.github.com/users/schacon
   "created_at": "2008-01-27T17:19:28Z",
   "updated_at": "2014-06-10T02:37:23Z"
 }
-----
+```
 
 有大量类似这样的接口来获得关于组织、项目、问题、提交的信息 -- 差不多就是你能在 GitHub 上看到的所有东西。
 甚至可以使用 API 来渲染任意 Markdown 或寻找一个 `.gitignore` 模板。
 
-[source,javascript]
-----
+```javascript
 $ curl https://api.github.com/gitignore/templates/Java
 {
   "name": "Java",
@@ -162,20 +159,20 @@ $ curl https://api.github.com/gitignore/templates/Java
 hs_err_pid*
 "
 }
-----
+```
 
 
-==== 在一个问题上评论
+#### 在一个问题上评论
 
 然而，如果想要在网站上进行一个操作，如在 Issue 或 Pull Request 上评论，或者想要查看私有内容或与其交互，你需要授权。
 
 这里提供了几种授权方式。
 你可以使用仅需用户名与密码的基本授权，但是通常更好的主意是使用一个个人访问令牌。
-可以从设置页的 ``Applications'' 标签生成访问令牌。
+可以从设置页的 `Applications` 标签生成访问令牌。
 
-[[_access_token]]
-.从设置页的 ``Applications'' 标签生成访问令牌。
-image::../images/scripting-05-access-token.png[访问令牌]
+.从设置页的 `Applications` 标签生成访问令牌。:
+
+![访问令牌](../images/scripting-05-access-token.png)
 
 它会询问这个令牌的作用域与一个描述。
 确保使用一个好的描述信息，这样当脚本或应用不再使用时你会很放心地移除。
@@ -192,8 +189,7 @@ GitHub 只会显示令牌一次，所以记得一定要拷贝它。
 想要对一个特定问题 Issue #6 留下一条评论。
 必须使用刚刚生成的令牌作为 Authorization 头信息，发送一个到 `repos/<user>/<repo>/issues/<num>/comments` 的 HTTP POST 请求。
 
-[source,javascript]
-----
+```javascript
 $ curl -H "Content-Type: application/json" \
        -H "Authorization: token TOKEN" \
        --data '{"body":"A new comment, :+1:"}' \
@@ -205,24 +201,24 @@ $ curl -H "Content-Type: application/json" \
   "user": {
     "login": "tonychacon",
     "id": 7874698,
-    "avatar_url": "https://avatars.githubusercontent.com/u/7874698?v=2",
+    "avatar_url": "https://avatars.githubusercontent.com/u/7874698?v#2",
     "type": "User",
   },
   "created_at": "2014-10-08T07:48:19Z",
   "updated_at": "2014-10-08T07:48:19Z",
   "body": "A new comment, :+1:"
 }
-----
+```
 
 现在如果进入到那个问题，可以看到我们刚刚发布的评论，像 <<_api_comment>> 一样。
 
-[[_api_comment]]
-.从 GitHub API 发布的一条评论
-image::../images/scripting-06-comment.png[API 评论]
+.从 GitHub API 发布的一条评论:
+
+![API 评论](../images/scripting-06-comment.png)
 
 可以使用 API 去做任何可以在网站上做的事情 -- 创建与设置里程碑、指派人员到 Issues 与 Pull Requests，创建与修改标签、访问提交数据、创建新的提交与分支、打开关闭或合并 Pull Requests、创建与编辑团队、在 Pull Request 中评论某行代码、搜索网站等等。
 
-==== 修改 Pull Request 的状态
+#### 修改 Pull Request 的状态
 
 如果使用 Pull Requests 的话我们将要看到的最后一个例子会很有用。
 每一个提交可以有一个或多个与它关联的状态，有 API 来添加与查询状态。
@@ -232,70 +228,69 @@ image::../images/scripting-06-comment.png[API 评论]
 
 假设在仓库中设置了一个 web 钩子访问一个用来检查提交信息中的 `Signed-off-by` 字符串的小的 web 服务。
 
-[source,ruby]
-----
+```ruby
 require 'httparty'
 require 'sinatra'
 require 'json'
 
 post '/payload' do
-  push = JSON.parse(request.body.read) # parse the JSON
-  repo_name = push['repository']['full_name']
+  push # JSON.parse(request.body.read) # parse the JSON
+  repo_name # push['repository']['full_name']
 
   # look through each commit message
   push["commits"].each do |commit|
 
     # look for a Signed-off-by string
     if /Signed-off-by/.match commit['message']
-      state = 'success'
-      description = 'Successfully signed off!'
+      state # 'success'
+      description # 'Successfully signed off!'
     else
-      state = 'failure'
-      description = 'No signoff found.'
+      state # 'failure'
+      description # 'No signoff found.'
     end
 
     # post status to GitHub
-    sha = commit["id"]
-    status_url = "https://api.github.com/repos/#{repo_name}/statuses/#{sha}"
+    sha # commit["id"]
+    status_url # "https://api.github.com/repos/#{repo_name}/statuses/#{sha}"
 
-    status = {
-      "state"       => state,
-      "description" => description,
-      "target_url"  => "http://example.com/how-to-signoff",
-      "context"     => "validate/signoff"
+    status # {
+      "state"       #> state,
+      "description" #> description,
+      "target_url"  #> "http://example.com/how-to-signoff",
+      "context"     #> "validate/signoff"
     }
     HTTParty.post(status_url,
-      :body => status.to_json,
-      :headers => {
-        'Content-Type'  => 'application/json',
-        'User-Agent'    => 'tonychacon/signoff',
-        'Authorization' => "token #{ENV['TOKEN']}" }
+      :body #> status.to_json,
+      :headers #> {
+        'Content-Type'  #> 'application/json',
+        'User-Agent'    #> 'tonychacon/signoff',
+        'Authorization' #> "token #{ENV['TOKEN']}" }
     )
   end
 end
-----
+```
 
 希望这相当容易做。
 在这个 web 钩子处理器中我们浏览刚刚推送上来的每一个提交，在提交信息中查找字符串 'Signed-off-by' 并且最终使用 HTTP 向 `/repos/<user>/<repo>/statuses/<commit_sha>` API 接口发送一个带有状态的 POST 请求。
 
-在本例中可以发送一个状态（'success', 'failure', 'error'）、一个发生了什么的描述信息、一个用户可以了解更多信息的目标 URL 与一个 ``context'' 以防一个单独的提交有多个状态。
-例如，一个测试服务可以提供一个状态与一个类似这样的验证服务也可能提供一个状态 -- ``context'' 字段是用来区别它们的。
+在本例中可以发送一个状态（'success', 'failure', 'error'）、一个发生了什么的描述信息、一个用户可以了解更多信息的目标 URL 与一个 `context` 以防一个单独的提交有多个状态。
+例如，一个测试服务可以提供一个状态与一个类似这样的验证服务也可能提供一个状态 -- `context` 字段是用来区别它们的。
 
 如果某人在 GitHub 中打开了一个新的 Pull Request 并且这个钩子已经设置，会看到类似 <<_commit_status>> 的信息。
 
-[[_commit_status]]
-.通过 API 的提交状态
-image::../images/scripting-07-status.png[提交状态]
+.通过 API 的提交状态:
 
-现在可以看到一个小的绿色对勾标记在提交信息中有 ``Signed-off-by'' 的提交旁边，红色的对勾标记在作者忘记签名的提交旁边。
+![提交状态](../images/scripting-07-status.png)
+
+现在可以看到一个小的绿色对勾标记在提交信息中有 `Signed-off-by` 的提交旁边，红色的对勾标记在作者忘记签名的提交旁边。
 也可以看到 Pull Request 显示在那个分支上的最后提交的状态，如果失败的话会警告你。
 如果对测试结果使用这个 API 那么就不会不小心合并某些未通过测试的最新提交。
 
-==== Octokit
+#### Octokit
 
 尽管我们在这些例子中都是通过 `curl` 与基本的 HTTP 请求来做几乎所有的事情，还有一些以更自然的方式利用 API 的开源库存在着。
 在写这篇文章的时候，被支持的语言包括 Go、Objective-C、Ruby 与 .NET。
-访问 http://github.com/octokit[] 了解更多相关信息，它们帮你处理了更多 HTTP 相关的内容。
+访问 http://github.com/octokit 了解更多相关信息，它们帮你处理了更多 HTTP 相关的内容。
 
 希望这些工具能帮助你自定义与修改 GitHub 来更好地为特定的工作流程工作。
-关于全部 API 的完整文档与常见任务的指南，请查阅 https://developer.github.com[]。
+关于全部 API 的完整文档与常见任务的指南，请查阅 https://developer.github.com 。
