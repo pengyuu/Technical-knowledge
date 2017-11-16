@@ -78,7 +78,7 @@ Groovy是一种动态语言。这种语言比较有特点，它和Java一样，�
 
 然后，创建一个test.groovy文件，里边只有一行代码：
 
-```java
+```groovy
 println  "hello groovy"
 ```
 
@@ -102,7 +102,7 @@ println  "hello groovy"
  - Groovy语句可以不用分号结尾。Groovy为了尽量减少代码的输入，确实煞费苦心
  - Groovy中支持动态类型，即定义变量的时候可以不指定其类型。Groovy中，变量定义可以使用def。注意，虽然def不是必须的，但为了代码清晰，建议还是使用def关键字
 
-    ```
+    ```groovy
     def variable1 = 1//可以不使用分号结尾
     def variable2 = "I am a person"
     def int x = 1 //变量定义时，也可以直接指定类型
@@ -110,14 +110,14 @@ println  "hello groovy"
 
   -  函数定义时，参数的类型也可以不指定。比如
 
-      ```java
+      ```groovy
       String testFunction(arg1,arg2){//无需指定参数类型
         ...
       }
       ```
  - 除了变量定义可以不指定类型外，Groovy中函数的返回值也可以是无类型的。比如：
 
-    ```java
+    ```groovy
     //无类型的函数定义，必须使用def关键字
 
     def  nonReturnTypeFunc(){
@@ -134,7 +134,7 @@ println  "hello groovy"
 
  - 函数返回值：Groovy的函数里，可以不使用return xxx来设置xxx为函数返回值。如果不使用return语句的话，则函数里最后一句代码的执行结果被设置成返回值。比如
 
-```java
+```groovy
 //下面这个函数的返回值是字符串"getSomething return value"
 
 def getSomething(){
@@ -152,13 +152,13 @@ Groovy对字符串支持相当强大，充分吸收了一些脚本语言的优�
 
  - 单引号''中的内容严格对应Java中的String，不对$符号进行转义
 
-    ```java
+    ```groovy
     def singleQuote='I am $ dolloar'  //输出就是I am $ dolloar
     ```
 
  -   双引号""的内容则和脚本语言的处理有点像，如果字符中有$号的话，则它会$表达式先求值。
 
-      ```java
+      ```groovy
       def doubleQuoteWithoutDollar = "I am one dollar" //输出 I am one dollar
       def x = 1
       def doubleQuoteWithDollar = "I am $x dolloar" //输出I am 1 dolloar
@@ -166,7 +166,7 @@ Groovy对字符串支持相当强大，充分吸收了一些脚本语言的优�
 
  - 三个引号'''xxx'''中的字符串支持随意换行，比如
 
-    ```java
+    ```groovy
     def multieLines = ''' begin
         line  1
         line  2
@@ -181,13 +181,13 @@ Groovy对字符串支持相当强大，充分吸收了一些脚本语言的优�
 
 注意，虽然写代码的时候，对于函数调用可以不带括号，但是Groovy经常把属性和函数调用混淆。比如
 
-```java
+```groovy
 def getSomething(){
    "hello"
 }
 ```
 
-```java
+```groovy
 getSomething()   //如果不加括号的话，Groovy会误认为getSomething是一个变量。
 ```
 
@@ -255,16 +255,16 @@ Groovy中的容器类很简单，就三种：
 >处理成字符串"key1"和"key2"
 >
 >不过Key要是不使用引号包起来的话，也会带来一定混淆，比如
-
+>
 >def key1="wowo"
 >def aConfusedMap=[key1:"who am i?"]
 >
 >aConfuseMap中的key1到底是"key1"还是变量key1的值“wowo”？显然，答案是字符串"key1"。如果要是"wowo"的话，则aConfusedMap的定义必须设置成：
-
+>
 >def aConfusedMap=[(key1):"who am i?"]
-
+>
 >Map中元素的存取更加方便，它支持多种方法：
-
+>
 >println aMap.keyName    <==这种表达方法好像key就是aMap的一个成员变量一样
 >println aMap['keyName'] <==这种表达方法更传统一点
 >aMap.anotherkey = "i am map"  <==为map添加新元素
@@ -277,7 +277,7 @@ Range是Groovy对List的一种拓展，变量定义和大体的使用方法如�
 >                      左边这个aRange包含1,2,3,4,5这5个值
 >
 >如果不想包含最后一个元素，则
-
+>
 >def aRangeWithoutEnd = 1..<5  <==包含1,2,3,4这4个元素
 >
 >println aRange.from
@@ -314,7 +314,7 @@ Groovy的API文档位于 http://www.groovy-lang.org/api.html
 
 闭包，是一种数据类型，它代表了一段可执行的代码。其外形如下：
 
-```java
+```groovy
 def aClosure = {//闭包是一段代码，所以需要用花括号括起来..
     String param1, int param2 ->  //这个箭头很关键。箭头前面是参数定义，箭头后面是代码
     println"this is code" //这是代码，最后一句是返回值，
@@ -324,7 +324,7 @@ def aClosure = {//闭包是一段代码，所以需要用花括号括起来..
 
 简而言之，Closure的定义格式是：
 
-```
+```groovy
 def xxx = {paramters -> code} //或者
 def xxx = {无参数，纯code} //这种case不需要 -> 符号
 ```
@@ -337,7 +337,7 @@ def xxx = {无参数，纯code} //这种case不需要 -> 符号
 
 比如：
 
-```
+```groovy
 aClosure.call("this is string",100)
 //或者
 aClosure("this is string", 100)
@@ -347,27 +347,27 @@ aClosure("this is string", 100)
 
 如果闭包没定义参数的话，则隐含有一个参数，这个参数名字叫it，和this的作用类似。it代表闭包的参数。
 
-```
+```groovy
 def greeting = { "Hello, $it!" }
 assert greeting('Patrick') == 'Hello, Patrick!'
 ```
 
 等同于：
 
-```
+```groovy
 def greeting = { it -> "Hello, $it!" }
 assert greeting('Patrick') == 'Hello, Patrick!'
 ```
 
 但是，如果在闭包定义时，采用下面这种写法，则表示闭包没有参数！
 
-```
+```groovy
 def noParamClosure = { -> true }
 ```
 
 这个时候，我们就不能给noParamClosure传参数了！
 
-```
+```groovy
 noParamClosure ("test")  <==报错喔！
 ```
 
@@ -377,13 +377,13 @@ noParamClosure ("test")  <==报错喔！
 
 闭包在Groovy中大量使用，比如很多类都定义了一些函数，这些函数最后一个参数都是一个闭包。比如：
 
-```
+```groovy
 public static <T> List<T> each(List<T> self, Closure closure)
 ```
 
 上面这个函数表示针对List的每一个元素都会调用closure做一些处理。这里的closure，就有点回调函数的感觉。但是，在使用这个each函数的时候，我们传递一个怎样的Closure进去呢？比如：
 
-```
+```groovy
 def iamList = [1,2,3,4,5]  //定义一个List
 iamList.each{  //调用它的each，这段代码的格式看不懂了吧？each是个函数，圆括号去哪了？
       println it
@@ -394,8 +394,8 @@ iamList.each{  //调用它的each，这段代码的格式看不懂了吧？each�
 
  - each函数调用的圆括号不见了！原来，Groovy中，当函数的最后一个参数是闭包的话，可以省略圆括号。比如
 
-```
-def  testClosure(int a1,String b1, Closure closure){
+```groovy
+def  testClosure(int a1, String b1, Closure closure){
       //do something
       closure() //调用闭包
 }
@@ -411,7 +411,7 @@ testClosure (4, "test", {
 
 经常碰见图7这样的没有圆括号的代码。省略圆括号虽然使得代码简洁，看起来更像脚本语言，但是它这经常会让我confuse（不知道其他人是否有同感），以doLast为例，完整的代码应该按下面这种写法：
 
-```
+```groovy
 doLast({
    println 'Hello world!'
 })
@@ -425,13 +425,13 @@ doLast({
 
 另外一个比较让人头疼的地方是，Closure的参数该怎么搞？还是刚才的each函数：
 
-```
+```groovy
 public static <T> List<T> each(List<T> self, Closure closure)
 ```
 
 如何使用它呢？比如：
 
-```
+```groovy
 def iamList = [1,2,3,4,5]  //定义一个List变量
 iamList.each{  //调用它的each函数，只要传入一个Closure就可以了。
   println it
@@ -443,7 +443,7 @@ iamList.each{  //调用它的each函数，只要传入一个Closure就可以了�
 对于each所需要的Closure，它的参数是什么？有多少个参数？返回值是什么？
 我们能写成下面这样吗？
 
-```
+```groovy
 iamList.each{String name,int x ->
   return x
 }  //运行的时候肯定报错！
@@ -502,7 +502,7 @@ Java中，我们最熟悉的是类。但是我们在Java的一个源码文件中
 
 test.groovy的代码是：
 
-```
+```groovy
 println 'Groovy world!'
 ```
 
@@ -529,7 +529,7 @@ groovyc是一个比较好的命令，读者要掌握它的用法。然后利用j
 
 前面说了，xxx.groovy只要不是和Java那样的class，那么它就是一个脚本。而且脚本的代码其实都会被放到run函数中去执行。那么，在Groovy的脚本中，很重要的一点就是脚本中定义的变量和它的作用域。举例：
 
-```
+```groovy
 def x = 1 <==注意，这个x有def（或者指明类型，比如 int x = 1）
 def printx(){
    println x
@@ -549,7 +549,7 @@ printx被定义成test类的成员函数
 def x = 1，这句话是在run中创建的。所以，x=1从代码上看好像是在整个脚本中定义的，但实际上printx访问不了它。printx是test成员函数，除非x也被定义成test的成员函数，否则printx不能访问它。
 那么，如何使得printx能访问x呢？很简单，定义的时候不要加类型和def。即：
 
-```
+```groovy
 x = 1  <==注意，去掉def或者类型
 def printx(){
    println x
@@ -575,7 +575,7 @@ printx()  <==OK
 
 执行groovy test1.groovy，报错。说x找不到。这是因为x是在test的run函数动态加进去的。怎么办？
 
-```
+```groovy
 import groovy.transform.Field;   //必须要先import
 @Field x = 1  <==在x前面加上@Field标注，这样，x就彻彻底底是test的成员变量了。
 ```
@@ -606,7 +606,7 @@ def targetFile = new File(文件名)  <==File对象还是要创建的。
 
  1. 读该文件中的每一行：eachLine的唯一参数是一个Closure。Closure的参数是文件每一行的内容，其内部实现肯定是Groovy打开这个文件，然后读取文件的一行，然后调用Closure...
 
-    ```
+    ```groovy
     targetFile.eachLine{
       StringoneLine ->
        printlnoneLine
@@ -616,13 +616,13 @@ def targetFile = new File(文件名)  <==File对象还是要创建的。
 
  2. 直接得到文件内容
 
-      ```
+      ```groovy
       targetFile.getBytes()  <==文件内容一次性读出，返回类型为byte[]
       ```
 
  3. 使用InputStream.InputStream的SDK在 http://docs.groovy-lang.org/latest/html/groovy-jdk/java/io/InputStream.html
 
-    ```
+    ```groovy
     def ism =  targetFile.newInputStream()
     //操作ism，最后记得关掉
     ism.close
@@ -630,7 +630,7 @@ def targetFile = new File(文件名)  <==File对象还是要创建的。
 
  4. 使用闭包操作inputStream，以后在Gradle里会常看到这种搞法
 
-    ```
+    ```groovy
     targetFile.withInputStream{ ism ->
        操作ism. 不用close。Groovy会自动替你close
     }
@@ -649,7 +649,7 @@ def targetFile = new File(文件名)  <==File对象还是要创建的。
 
 和读文件差不多。不再啰嗦。这里给个例子，告诉大家如何copy文件。
 
-```
+```groovy
 def srcFile = new File(源文件名)
 def targetFile = new File(目标文件名)
 targetFile.withOutputStream{ os->
@@ -701,7 +701,7 @@ test.xml文件：
 
 现在来看怎么玩转GPath：
 
-```
+```groovy
 //第一步，创建XmlSlurper类
 def xparser = new XmlSlurper()
 def targetFile = new File("test.xml")
@@ -824,7 +824,7 @@ Gradle中，每一个待编译的工程都叫一个Project。每一个Project在
 
  [settings.gradle]
 
- ```
+ ```groovy
  //通过include函数，将子Project的名字（其文件夹名）包含进来
 include  'CPosSystemSdk' ,'CPosDeviceSdk' ,
        'CPosSdkDemo','CPosDeviceServerApk','CPosSystemSdkWizarPosImpl'
@@ -836,7 +836,7 @@ include  'CPosSystemSdk' ,'CPosDeviceSdk' ,
 
 另外，settings.gradle除了可以include外，还可以设置一些函数。这些函数会在gradle构建整个工程任务的时候执行，所以，可以在settings做一些初始化的工作。比如：我的settings.gradle的内容：
 
-```
+```groovy
 //定义一个名为initMinshengGradleEnvironment的函数。该函数内部完成一些初始化操作
 //比如创建特定的目录，设置特定的参数等
 def initMinshengGradleEnvironment(){
@@ -968,7 +968,7 @@ Gradle基于Groovy，Groovy又基于Java。所以，Gradle执行的时候和Groo
 
 我在posdevice build.gradle中和settings.gradle中分别加了如下输出：
 
-```
+```groovy
 //在settings.gradle中，则输出"In settings,gradle id is"
 println "In posdevice, gradle id is " +gradle.hashCode()
 println "Home Dir:" + gradle.gradleHomeDir
@@ -1011,7 +1011,7 @@ Project的API位于 https://docs.gradle.org/current/javadoc/org/gradle/api/Proje
 
 apply是一个函数，此处调用的是图30中最后一个apply函数。注意，Groovy支持函数调用的时候通过  参数名1:参数值2，参数名2：参数值2 的方式来传递参数
 
-```
+```groovy
 apply plugin: 'com.android.library'    <==如果是编译Library，则加载此插件
 
 apply plugin: 'com.android.application'  <==如果是编译Android APP，则加载此插件
@@ -1027,7 +1027,7 @@ utils.gradle是我封装的一个gradle脚本，里边定义了一些方便函�
 
 的versionName，或者是copy jar包/APK包到指定的目录
 
-```
+```groovy
 apply from: rootProject.getRootDir().getAbsolutePath() + "/utils.gradle"
 ```
 
@@ -1047,7 +1047,7 @@ Gradle提供了一种名为extra property的方法。extra property是额外属�
 
 我在settings.gradle中想为Gradle对象设置一些外置属性，所以在initMinshengGradleEnvironment函数中
 
-```
+```groovy
 def initMinshengGradleEnvironment(){
     //属性值从local.properites中读取
     Propertiesproperties = new Properties()
@@ -1069,7 +1069,7 @@ def initMinshengGradleEnvironment(){
 
 [utils.gradle]
 
-```
+```groovy
 //utils.gradle中定义了一个获取AndroidManifests.xmlversionName的函数
 def  getVersionNameAdvanced(){
    //下面这行代码中的project是谁？
@@ -1109,7 +1109,7 @@ ext{ //此段花括号中代码是闭包
 
  比如：我在posdevice每个build.gradle中都有如下的代码：
 
- ```
+ ```groovy
  tasks.getByName("assemble"){
    it.doLast{
        println "$project.name: After assemble, jar libs are copied tolocal repository"
@@ -1135,7 +1135,7 @@ Task的API文档位于 https://docs.gradle.org/current/dsl/org.gradle.api.Task.h
 
 [build.gradle]
 
-```
+```groovy
 //Task是和Project关联的，所以，我们要利用Project的task函数来创建一个Task
 task myTask  <==myTask是新建Task的名字
 task myTask { configure closure }
@@ -1181,7 +1181,7 @@ utils.gradle是我自己加的，为我们团队特意加了一些常见函数�
 
 [utils.gradle]
 
-```
+```groovy
 import groovy.util.XmlSlurper  //解析XML时候要引入这个groovy的package
 
 def copyFile(String srcFile,dstFile){
@@ -1239,7 +1239,7 @@ ext{
 
 [settings.gradle]
 
-```
+```groovy
 /*我们团队内部建立的编译环境初始化函数
   这个函数的目的是
   1  解析一个名为local.properties的文件，读取AndroidSDK和NDK的路径
@@ -1277,7 +1277,7 @@ include 'CPosSystemSdk' , 'CPosDeviceSdk' ,'CPosSdkDemo','CPosDeviceServerApk', 
 
 [local.properties]
 
-```
+```groovy
 local.dir=/home/innost/workspace/minsheng-flat-dir/
 //注意，根据Android Gradle的规范，只有下面两个属性是必须的，其余都是我自己加的
 sdk.dir=/home/innost/workspace/android-aosp-sdk/
@@ -1294,7 +1294,7 @@ sdk.api=android-19
 
 [posdevice build.gradle]
 
-```
+```groovy
 //下面这个subprojects{}就是一个Script Block
 subprojects {
   println"Configure for $project.name" //遍历子Project，project变量对应每个子Project
@@ -1340,7 +1340,7 @@ Absolutely right。只是这些函数你直接到Project API里不一定能找�
 
 CPosDeviceSdk是一个Android Library。按Google的想法，Android Library编译出来的应该是一个AAR文件。但是我的项目有些特殊，我需要发布CPosDeviceSdk.jar包给其他人使用。jar在编译过程中会生成，但是它不属于Android Library的标准输出。在这种情况下，我需要在编译完成后，主动copy jar包到我自己设计的产出物目录中。
 
-```
+```groovy
 //Library工程必须加载此插件。注意，加载了Android插件就不要加载Java插件了。因为Android
 //插件本身就是拓展了Java插件
 apply plugin: 'com.android.library'
@@ -1414,7 +1414,7 @@ https://developer.android.com/tools/building/plugin-for-gradle.html下载 。注
 
 [build.gradle]
 
-```
+```groovy
 apply plugin: 'com.android.application'  //APK编译必须加载这个插件
 android {
       compileSdkVersion gradle.api
@@ -1647,7 +1647,7 @@ android {
  - 所以后来下决心先把Groovy学会，主要是把自己暴露在闭包里边。另外，Groovy是一门语言，总得有SDK说明吧。写了几个例子，慢慢体会到Groovy的好处，也熟悉Groovy的语法了。
  - 接着开始看Gradle。Gradle有几本书，我看过Gradle in Action。说实话，看得非常痛苦。现在想起来，Gradle其实比较简单，知道它的生命周期，知道它怎么解析脚本，知道它的API，几乎很快就能干活。而Gradle In Action一上来就很细，而且没有从API角度介绍。说个很有趣的事情，书中有个类似下面的例子
 
-```
+```groovy
 task myTask  <<  {
    println ' I am myTask'
 }
