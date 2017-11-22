@@ -100,7 +100,7 @@ public static void main(String[] args) {
 }
 ```
 class D 有两种 `say` 方法:
-![](/images/multi_interface_01.png)
+![](./images/multi_interface_01.png)
 
 ##### 方法名, 参数相同; 返回值不同
 但在方法名, 参数相同, 返回值不同时 C 无法同时继承 A, B:
@@ -119,9 +119,9 @@ public interface B {
     }
 }
 ```
-![](/images/multi_interface_02.png)
+![](./images/multi_interface_02.png)
 
-![](/images/multi_interface_03.png)
+![](./images/multi_interface_03.png)
 
 ##### 方法名相同, 参数不相同, 返回值不同
 
