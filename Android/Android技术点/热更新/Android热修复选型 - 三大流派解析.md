@@ -4,7 +4,7 @@
 
 ### 正常开发流程
 
-![](/images/640.webp)
+![](./images/640.webp)
 
 从流程来看，传统的开发流程存在很多弊端：
 
@@ -14,7 +14,7 @@
 
 ### 热修复开发修复
 
-![](/images/hotfix_work.webp)
+![](./images/hotfix_work.webp)
 
 而热修复的开发流程显得更加灵活，优势很多：
 
@@ -30,7 +30,7 @@
 
 超级补丁技术基于DEX分包方案，使用了多DEX加载的原理，大致的过程就是：把BUG方法修复以后，放到一个单独的DEX里，插入到dexElements数组的最前面，让虚拟机去加载修复完后的方法。
 
-![](/images/QQ_zone.webp)
+![](./images/QQ_zone.webp)
 
 当patch.dex中包含Test.class时就会优先加载，在后续的DEX中遇到Test.class的话就会直接返回而不去加载，这样就达到了修复的目的。
 
@@ -42,25 +42,25 @@
 
 先进入程序入口QZoneRealApplication，在attachBaseContext中进行了两步操作：修复CLASS_ISPREVERIFIED标志导致的unexpected DEX problem异常、加载修复的DEX。
 
-![](/images/QZoneRealApplication.webp)
+![](./images/QZoneRealApplication.webp)
 
 #### 1. 修复unexpectedDEX problem异常
 
 先看代码：
 
-![](/images/qq01.webp)
+![](./images/qq01.webp)
 
 可以看到，这里是要加载一个libs目录下的dalvikhack.jar。在项目的assets/libs找到该文件，解压得到classes.dex文件，逆向打开该DEX文件:
 
-![](/images/qzone01.webp)
+![](./images/qzone01.webp)
 
 通过不同的DEX加载进来，然后在每一个类的构造方法中引用其他dex中的唯一类AnitLazyLoad，避免类被打上CLASS_ISPREVERIFIED标志。
 
-![](/images/qzone02.webp)
+![](./images/qzone02.webp)
 
 在无修复的情况下，将DO_VERIFY_CLASSES设置为false，提高性能。只有在需要修复的时候，才设置为true。
 
-![](/images/qzone03.webp)
+![](./images/qzone03.webp)
 
 至于如何加载进来，与接下来第二个步骤基本相同。
 
@@ -68,7 +68,7 @@
 
 从loadPatchDex()方法进入，经过几次跳转，到达核心的代码段，SystemClassLoaderInjector.c()。由于进行了混淆和多次方法的跳转，于是将核心代码段做了如下整理：
 
-![](/images/qzone04.webp)
+![](./images/qzone04.webp)
 
 修复的步骤为：
 
@@ -84,7 +84,7 @@
 
 整体的流程图如下：
 
-![](/images/qzone05.webp)
+![](./images/qzone05.webp)
 
 从流程图来看，可以很明显的找到这种方式的特点：
 
@@ -106,35 +106,35 @@
 
 微信针对QQ空间超级补丁技术的不足提出了一个提供DEX差量包，整体替换DEX的方案。主要的原理是与QQ空间超级补丁技术基本相同，区别在于不再将patch.dex增加到elements数组中，而是差量的方式给出patch.dex，然后将patch.dex与应用的classes.dex合并，然后整体替换掉旧的DEX，达到修复的目的。
 
-![](/images/tinker01.webp)
+![](./images/tinker01.webp)
 
 我们来逆向微信APK看一下具体的实现：
 
 先找到应用入口TinkerApplication，在onBaseContextAttached()调用了loadTinker(),
 
-![](/images/tinker02.webp)
+![](./images/tinker02.webp)
 
 进入TinkerLoader的tryLoad()方法中，
 
-![](/images/tinker03.webp)
+![](./images/tinker03.webp)
 
 从方法名可以预见，在tryLoadPatchFilesInternal()中尝试加载本地的补丁，再经过跳转进入核心修复功能类SystemClassLoaderAdder.class中。
 
-![](/images/tinker04.webp)
+![](./images/tinker04.webp)
 
 代码中可以看出，根据Android版本的不同，分别采取具体的修复操作，不过原理都是一样的。我们以V19为例，
 
-![](/images/tinker05.webp)
+![](./images/tinker05.webp)
 
 从代码中可以看到，通过反射操作得到PathClassLoader的DexPatchList,反射调用patchlist的makeDexElements()方法吧本地的dex文件直接替换到Element[]数组中去，达到修复的目的。
 
 对于如何进行patch.dex与classes.dex的合并操作，这里微信开启了一个新的进程，开启新进程的服务TinkerPatchService进行合并。
 
-![](/images/tinker06.webp)
+![](./images/tinker06.webp)
 
 整体的流程如下：
 
-![](/images/tinker07.webp)
+![](./images/tinker07.webp)
 
 从流程图来看，同样可以很明显的找到这种方式的特点：
 
@@ -158,7 +158,7 @@
 
 阿里百川推出的热修复HotFix服务，相对于QQ空间超级补丁技术和微信Tinker来说，定位于紧急bug修复的场景下，能够最及时的修复bug，下拉补丁立即生效无需等待。
 
-![](/images/hotfix01.webp)
+![](./images/hotfix01.webp)
 
 #### 1、AndFix实现原理
 
@@ -166,19 +166,19 @@ AndFix不同于QQ空间超级补丁技术和微信Tinker通过增加或替换整
 
 原理图如下：
 
-![](/images/hotfix02.webp)
+![](./images/hotfix02.webp)
 
 #### 2、AndFix实现过程
 
 对于实现方法的替换，需要在Native层操作，经过三个步骤：
 
-![](/images/hotfix03.webp)
+![](./images/hotfix03.webp)
 
 接下来以Dalvik设备为例，来分析具体的实现过程：
 
 ##### 2.1、setup()
 
-![](/images/hotfix04.webp)
+![](./images/hotfix04.webp)
 
 对于Dalvik来说，遵循JIT即时编译机制，需要在运行时装载libdvm.so动态库，获取以下内部函数：
 
@@ -188,17 +188,17 @@ AndFix不同于QQ空间超级补丁技术和微信Tinker通过增加或替换整
 
 ##### 2.2 setFieldFlag
 
-![](/images/hotfix05.webp)
+![](./images/hotfix05.webp)
 
 该操作的目的：让private、protected的方法和字段可被动态库看见并识别。原因在于动态库会忽略非public属性的字段和方法。
 
 ##### 2.3 replaceMethod
 
-![](/images/hotfix06.webp)
+![](./images/hotfix06.webp)
 
 该步骤是方法替换的核心，替换的流程如下：
 
-![](/images/hotfix07.webp)
+![](./images/hotfix07.webp)
 
 AndFix对ART设备同样支持，具体的过程与Dalvik相似，这里不再赘述。
 
@@ -220,7 +220,7 @@ AndFix对ART设备同样支持，具体的过程与Dalvik相似，这里不再�
 
 综合分析如下：
 
-![](/images/fix01.webp)
+![](./images/fix01.webp)
 
 ## 热修复的坑和解
 
@@ -236,7 +236,7 @@ AndFix对ART设备同样支持，具体的过程与Dalvik相似，这里不再�
 
 对于补丁DEX来说，应用启动时虚拟机会进行dexopt操作，将patch.dex文件转换成odex文件，这个过程非常耗时。而这个过程，又要求需要在主线程中，以同步的方式执行，否则无法成功进行修复。就DEX的加载时间，大概做了以下的时间测试。
 
-![](/images/fix02.webp)
+![](./images/fix02.webp)
 
 随着patch.dex的增加，在不做任何优化的情况下，启动时间也直线增长。对于一个应用来说，这简直是灾难性的。
 
